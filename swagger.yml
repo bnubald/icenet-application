@@ -1,0 +1,16 @@
+openapi: 3.0.0
+info:
+  title: "IceNet API"
+  description: "The service discovery and processing API for IceNet"
+  version: "0.1.0"
+servers:
+  - url: "/api"
+components:
+  parameters: {}
+paths:
+  /version:
+    get:
+      operationId: "icenet.get_version"
+      responses:
+        "200":
+          description: "Successfully read version"
