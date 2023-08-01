@@ -1,15 +1,15 @@
 import logging
-import os
 from urllib.parse import urlparse
 
 from bas_style_kit_jinja_templates import BskTemplates
 from flask import redirect, render_template, request
-from jinja2 import PrefixLoader, PackageLoader, FileSystemLoader
+from jinja2 import PrefixLoader, PackageLoader
 
 import connexion
 
 logging.getLogger().setLevel(logging.DEBUG)
-logging.getLogger("connexion").setLevel(logging.DEBUG)
+logging.getLogger("connexion").setLevel(logging.WARNING)
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 
 def create_app(config_class=None):
@@ -50,7 +50,6 @@ def page_not_found(e):
 @app.route('/')
 def index():
     service = urlparse(request.base_url).netloc.split(":")[0].split(".")[0]
-    logging.info("{} has service {}".format(request.base_url, service))
 
     if service == "api":
         location = "{}api/ui".format(request.base_url)
