@@ -1,0 +1,11 @@
+{% extends 'bas_style_kit/layouts/bsk_standard.j2' %}
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/main.css" />
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript" language="javascript">
+        console.log('jQuery version: ' + jQuery.fn.jquery);
+    </script>
+{% endblock %}

@@ -10,4 +10,4 @@ export FLASK_DEBUG=True
 export FLASK_ENVIRONMENT=development
 export ICENET_DATA_PATH=${ICENET_DATA_PATH:-./data}
 
-flask run
+flask run --debug

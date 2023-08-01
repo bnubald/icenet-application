@@ -1,3 +1,4 @@
+bas-style-kit-jinja-templates
 connexion[swagger-ui]
 flask<2.3.0
 gunicorn
