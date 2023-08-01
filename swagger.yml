@@ -10,7 +10,7 @@ components:
 paths:
   /version:
     get:
-      operationId: "icenet.get_version"
+      operationId: "icenet_app.icenet.get_version"
       responses:
         "200":
           description: "Successfully read version"
