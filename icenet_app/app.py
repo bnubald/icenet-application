@@ -8,35 +8,35 @@ from jinja2 import PrefixLoader, PackageLoader
 import connexion
 
 logging.getLogger().setLevel(logging.DEBUG)
-logging.getLogger("connexion").setLevel(logging.WARNING)
-logging.getLogger("werkzeug").setLevel(logging.WARNING)
+
+from icenet_app.plots import default_plot, geoapi_plot
 
 
 def create_app(config_class=None):
     connexion_app = connexion.FlaskApp(__name__,
-                             specification_dir="../")
+                                       specification_dir="../")
     connexion_app.add_api("swagger.yml")
-    app = connexion_app.app
+    application = connexion_app.app
 
     if config_class is not None:
-        app.config.from_object(config_class)
+        application.config.from_object(config_class)
 
-    app.jinja_loader = PrefixLoader({
+    application.jinja_loader = PrefixLoader({
         "app": PackageLoader("icenet_app"),
         "bas_style_kit": PackageLoader('bas_style_kit_jinja_templates'),
     })
-    app.config['BSK_TEMPLATES'] = BskTemplates()
-    app.config['BSK_TEMPLATES'].bsk_site_nav_brand_text = 'IceNet'
-    app.config['BSK_TEMPLATES'].bsk_site_development_phase = 'alpha'
-    app.config['BSK_TEMPLATES'].bsk_site_feedback_href = '/feedback'
-    app.config['BSK_TEMPLATES'].bsk_site_footer_policies_cookies_href = '/legal/cookies'
-    app.config['BSK_TEMPLATES'].bsk_site_footer_policies_copyright_href = '/legal/copyright'
-    app.config['BSK_TEMPLATES'].bsk_site_footer_policies_privacy_href = '/legal/privacy'
-    app.config['BSK_TEMPLATES'].site_description = 'IceNet Dashboard and API services'
-    app.config['BSK_TEMPLATES'].site_styles.append({'href': '/static/css/main.css'})
-    app.config['BSK_TEMPLATES'].site_title = 'IceNet Dashboard'
+    application.config['BSK_TEMPLATES'] = BskTemplates()
+    application.config['BSK_TEMPLATES'].bsk_site_nav_brand_text = 'IceNet'
+    application.config['BSK_TEMPLATES'].bsk_site_development_phase = 'alpha'
+    application.config['BSK_TEMPLATES'].bsk_site_feedback_href = '/feedback'
+    application.config['BSK_TEMPLATES'].bsk_site_footer_policies_cookies_href = '/legal/cookies'
+    application.config['BSK_TEMPLATES'].bsk_site_footer_policies_copyright_href = '/legal/copyright'
+    application.config['BSK_TEMPLATES'].bsk_site_footer_policies_privacy_href = '/legal/privacy'
+    application.config['BSK_TEMPLATES'].site_description = 'IceNet Dashboard and API services'
+    application.config['BSK_TEMPLATES'].site_styles.append({'href': '/static/css/main.css'})
+    application.config['BSK_TEMPLATES'].site_title = 'IceNet Dashboard'
 
-    return app
+    return application
 
 
 app = create_app()
@@ -55,5 +55,10 @@ def index():
         location = "{}api/ui".format(request.base_url)
         logging.info("Redirecting to the API at {}".format(location))
         return redirect(location, 301)
-    return render_template("app/index.j2")
 
+    return render_template("app/index.j2",
+                           icenet_coverage=geoapi_plot(),
+                           icenet_histogram=default_plot(),
+                           icenet_map=default_plot(),
+                           icenet_sie_change=default_plot(),
+                           icenet_uncertainty=default_plot())

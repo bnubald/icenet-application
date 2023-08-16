@@ -5,7 +5,7 @@ if [ ! -d venv ]; then
 	exit 1
 fi
 
-export FLASK_APP=icenet_app.app
+export FLASK_APP="icenet_app.app"
 export FLASK_DEBUG=True
 export FLASK_ENVIRONMENT=development
 export ICENET_DATA_PATH=${ICENET_DATA_PATH:-./data}

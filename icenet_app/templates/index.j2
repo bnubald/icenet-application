@@ -1,4 +1,35 @@
 {% extends "app/layouts/base.j2" %}
 {% block main_content %}
-<p>IceNet...</p>
+<div class="bsk-panel bsk-panel-default">
+  <header class="bsk-panel-heading">
+    <dl class="bsk-dl-lg bsk-dl-striped bsk-dl-horizontal bsk-dl-horizontal-lg">
+      <dt>Forecast generated on:</dt>
+        <dd>...</dd>
+      <dt>Forecast period:</dt>
+        <dd>...</dd>
+      <dt>Pipeline metadata:</dt>
+        <dd>...</dd>
+      <dt>Data metadata:</dt>
+        <dd>...</dd>
+    </dl>
+  </header>
+  <main class="bsk-panel-body">
+    <div class="bsk-row">
+      <div class="bsk-col-12-md-6 bsk-docs-content-block">
+        {{ icenet_histogram }}
+      </div>
+      <div class="bsk-col-12-md-6 bsk-docs-content-block">
+        {{ icenet_map }}
+      </div>
+    </div>
+    <div class="bsk-row">
+      <div class="bsk-col-12-md-6 bsk-docs-content-block">
+        {{ icenet_sie_change }}
+      </div>
+      <div class="bsk-col-12-md-6 bsk-docs-content-block">
+        {{ icenet_uncertainty }}
+      </div>
+    </div>
+  </main>
+</div>
 {% endblock %}
