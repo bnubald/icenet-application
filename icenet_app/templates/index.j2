@@ -3,31 +3,46 @@
 <div class="bsk-panel bsk-panel-default">
   <header class="bsk-panel-heading">
     <dl class="bsk-dl-lg bsk-dl-striped bsk-dl-horizontal bsk-dl-horizontal-lg">
-      <dt>Forecast generated on:</dt>
-        <dd>...</dd>
+      <dt>Forecast history:</dt>
+        <dd>{{ icenet_metadata['history'] }}</dd>
       <dt>Forecast period:</dt>
-        <dd>...</dd>
+        <dd>{{ icenet_metadata['start_date'] }} - {{ icenet_metadata['end_date'] }}</dd>
       <dt>Pipeline metadata:</dt>
-        <dd>...</dd>
+        <dd>{{ icenet_metadata['source']|trim }}</dd>
       <dt>Data metadata:</dt>
-        <dd>...</dd>
+        <dd>{{ icenet_metadata['spatial_resolution'] }} in {{ icenet_metadata['geospatial_bounds_crs'] }}</dd>
     </dl>
   </header>
   <main class="bsk-panel-body">
     <div class="bsk-row">
-      <div class="bsk-col-12-md-6 bsk-docs-content-block">
-        {{ icenet_histogram }}
+      <div class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;">
+        <img src="{{ url_for("/api.icenet_app_icenet_get_image",
+                             forecast_date=icenet_metadata["init_date"],
+                             image="{}.png".format(icenet_metadata["date_range"][0].strftime("%Y%m%d"))) }}"
+             style="width:600px"
+             alt="Demo image" />
       </div>
       <div class="bsk-col-12-md-6 bsk-docs-content-block">
-        {{ icenet_map }}
+        {{ icenet_sie_change }}
       </div>
     </div>
     <div class="bsk-row">
       <div class="bsk-col-12-md-6 bsk-docs-content-block">
-        {{ icenet_sie_change }}
+        {{ icenet_trend_mean }}
       </div>
       <div class="bsk-col-12-md-6 bsk-docs-content-block">
-        {{ icenet_uncertainty }}
+        {{ icenet_trend_stddev }}
+      </div>
+    </div>
+    <div class="bsk-row">
+      <div class="bsk-col-12-md-12 bsk-docs-content-block bsk-text-muted">
+        <br /><br />
+        <p>All data is &copy; British Antarctic Survey and The Alan Turing Institute 2023 and made
+        available via the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government License</a>
+        which is compatible with the <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>.</p>
+        <br />
+        <p>The data, imagery and graphs contained on this page are development forecast materials produced
+        by the IceNet pipeline for demonstration and research purposes only.</p>
       </div>
     </div>
   </main>

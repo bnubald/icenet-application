@@ -1,6 +1,9 @@
+import datetime as dt
 import logging
+import os
 from urllib.parse import urlparse
 
+import pandas as pd
 from bas_style_kit_jinja_templates import BskTemplates
 from flask import redirect, render_template, request
 from jinja2 import PrefixLoader, PackageLoader
@@ -9,7 +12,8 @@ import connexion
 
 logging.getLogger().setLevel(logging.DEBUG)
 
-from icenet_app.plots import default_plot, geoapi_plot
+from icenet_app.plots import line_plot
+from icenet_app.utils import load_json, get_forecast_data
 
 
 def create_app(config_class=None):
@@ -56,9 +60,25 @@ def index():
         logging.info("Redirecting to the API at {}".format(location))
         return redirect(location, 301)
 
+    inventory = get_forecast_data()
+    icenet_metadata = load_json("output_metadata.json", icenet_data_inventory=inventory)
+
+    date_range_files = sorted([df.split(".")[0] for df in inventory.keys() if df.endswith(".png")])
+    date_range = pd.date_range(date_range_files[0], date_range_files[-1])
+    icenet_metadata.update(dict(
+        date_range=date_range,
+        init_date=(date_range[0] - dt.timedelta(days=1)).strftime("%F"),
+        end_date=date_range[-1].strftime("%F"),
+        start_date=date_range[0].strftime("%F"),
+    ))
     return render_template("app/index.j2",
-                           icenet_coverage=geoapi_plot(),
-                           icenet_histogram=default_plot(),
-                           icenet_map=default_plot(),
-                           icenet_sie_change=default_plot(),
-                           icenet_uncertainty=default_plot())
+                           icenet_metadata=icenet_metadata,
+                           icenet_sie_change=line_plot(load_json("output_sie_growth.json",
+                                                                 icenet_data_inventory=inventory),
+                                                       title="Sea ice extent change"),
+                           icenet_trend_mean=line_plot(load_json("output_trend.json",
+                                                                 icenet_data_inventory=inventory)['mean'],
+                                                       title="Sea ice mean change"),
+                           icenet_trend_stddev=line_plot(load_json("output_trend.json",
+                                                                   icenet_data_inventory=inventory)['stddev'],
+                                                         title="Ensemble stddev change"))

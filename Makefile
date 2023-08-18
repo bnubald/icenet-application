@@ -14,5 +14,8 @@ clean:
 deploy-azure:
 	az webapp deployment source config --branch main --manual-integration --name $(ICENET_AZ_APPLICATION) --repo-url $(ICENET_GH_APPLICATION) --resource-group $(ICENET_RG)
 
+sync-deployment:
+	az webapp deployment source sync --name $(ICENET_AZ_APPLICATION) --resource-group $(ICENET_RG)
+
 run:
 	gunicorn icenet_app.app:app

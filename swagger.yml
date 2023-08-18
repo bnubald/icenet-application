@@ -8,6 +8,12 @@ servers:
 components:
   parameters: {}
 paths:
+  /forecast_image/{forecast_date}/{image}:
+    get:
+      operationId: "icenet_app.icenet.get_image"
+      responses:
+        "200":
+          description: "Successfully acquired image data for forecast"
   /version:
     get:
       operationId: "icenet_app.icenet.get_version"
