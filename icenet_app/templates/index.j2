@@ -21,17 +21,36 @@
     <div class="bsk-row">
       <div class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;">
       {% if "date_range" in icenet_metadata %}
+        {% for picture_date in icenet_metadata["date_range"] %}
         <img src="{{ url_for("/api.icenet_app_icenet_get_image",
                              forecast_date=icenet_metadata["init_date"],
-                             image="{}.png".format(icenet_metadata["date_range"][0].strftime("%Y%m%d"))) }}"
-             style="width:600px"
-             alt="Demo image" />
+                             image="sic_mean.{}.png".format(picture_date.strftime("%Y%m%d"))) }}"
+             class="fc_image fc_image_sic"
+             id="fc_image_sic_{{ picture_date.strftime("%Y%m%d") }}"
+             alt="Image of forecast on {{ picture_date.strftime("%Y%m%d") }}" />
+        {% endfor %}
       {% else %}
         <p>Data incomplete...</p>
       {% endif %}
       </div>
       <div class="bsk-col-12-md-6 bsk-docs-content-block">
-        {{ icenet_sie_change }}
+      {% if "date_range" in icenet_metadata %}
+        {% for picture_date in icenet_metadata["date_range"] %}
+        <img src="{{ url_for("/api.icenet_app_icenet_get_image",
+                             forecast_date=icenet_metadata["init_date"],
+                             image="sic_stddev.{}.png".format(picture_date.strftime("%Y%m%d"))) }}"
+             class="fc_image fc_image_stddev"
+             id="fc_image_stddev_{{ picture_date.strftime("%Y%m%d") }}"
+             alt="Standard deviation of ensemble of forecast on {{ picture_date.strftime("%Y%m%d") }}" />
+        {% endfor %}
+      {% else %}
+        <p>Data incomplete...</p>
+      {% endif %}
+      </div>
+    </div>
+    <div class="bsk-row">
+      <div class="bsk-col-12-md-12 bsk-docs-content-block center">
+        {{ date_picker(icenet_metadata["date_range"]) }}
       </div>
     </div>
     <div class="bsk-row">
@@ -41,6 +60,12 @@
       <div class="bsk-col-12-md-6 bsk-docs-content-block">
         {{ icenet_trend_stddev }}
       </div>
+    </div>
+    <div class="bsk-row">
+      <div class="bsk-col-12-md-6 bsk-docs-content-block">
+        {{ icenet_sie_change }}
+      </div>
+      <div class="bsk-col-12-md-6 bsk-docs-content-block">&nbsp;</div>
     </div>
     <div class="bsk-row">
       <div class="bsk-col-12-md-12 bsk-docs-content-block bsk-text-muted">
@@ -55,4 +80,16 @@
     </div>
   </main>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript" language="javascript">
+        var fc_image_cur_id = $("img.fc_image_sic").first().attr('id').slice(-8);
+        console.log("First image shown is " + fc_image_cur_id);
+        $("img.fc_image_sic").hide();
+        $("img.fc_image_stddev").hide();
+        $("img#fc_image_sic_" + fc_image_cur_id).show();
+        $("img#fc_image_stddev_" + fc_image_cur_id).show();
+    </script>
 {% endblock %}

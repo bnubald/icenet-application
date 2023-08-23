@@ -12,7 +12,7 @@ import connexion
 
 logging.getLogger().setLevel(logging.DEBUG)
 
-from icenet_app.plots import line_plot
+from icenet_app.plots import line_plot, date_picker
 from icenet_app.utils import load_json, get_forecast_data
 
 
@@ -63,7 +63,7 @@ def index():
     inventory = get_forecast_data()
     icenet_metadata = load_json("output_metadata.json", icenet_data_inventory=inventory)
 
-    date_range_files = sorted([df.split(".")[0] for df in inventory.keys() if df.endswith(".png")])
+    date_range_files = sorted([df.split(".")[1] for df in inventory.keys() if df.endswith(".png")])
     if len(date_range_files) < 1:
         logging.warning("No image data available")
     else:
@@ -77,6 +77,7 @@ def index():
         ))
 
     return render_template("app/index.j2",
+                           date_picker=date_picker,
                            icenet_metadata=icenet_metadata,
                            icenet_sie_change=line_plot(load_json("output_sie_growth.json",
                                                                  icenet_data_inventory=inventory),
