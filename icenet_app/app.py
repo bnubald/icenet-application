@@ -64,13 +64,18 @@ def index():
     icenet_metadata = load_json("output_metadata.json", icenet_data_inventory=inventory)
 
     date_range_files = sorted([df.split(".")[0] for df in inventory.keys() if df.endswith(".png")])
-    date_range = pd.date_range(date_range_files[0], date_range_files[-1])
-    icenet_metadata.update(dict(
-        date_range=date_range,
-        init_date=(date_range[0] - dt.timedelta(days=1)).strftime("%F"),
-        end_date=date_range[-1].strftime("%F"),
-        start_date=date_range[0].strftime("%F"),
-    ))
+    if len(date_range_files) < 1:
+        logging.warning("No image data available")
+    else:
+        date_range = pd.date_range(date_range_files[0], date_range_files[-1])
+
+        icenet_metadata.update(dict(
+            date_range=date_range,
+            init_date=(date_range[0] - dt.timedelta(days=1)).strftime("%F"),
+            end_date=date_range[-1].strftime("%F"),
+            start_date=date_range[0].strftime("%F"),
+        ))
+
     return render_template("app/index.j2",
                            icenet_metadata=icenet_metadata,
                            icenet_sie_change=line_plot(load_json("output_sie_growth.json",

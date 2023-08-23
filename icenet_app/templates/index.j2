@@ -6,7 +6,11 @@
       <dt>Forecast history:</dt>
         <dd>{{ icenet_metadata['history'] }}</dd>
       <dt>Forecast period:</dt>
+      {% if "date_range" in icenet_metadata %}
         <dd>{{ icenet_metadata['start_date'] }} - {{ icenet_metadata['end_date'] }}</dd>
+      {% else %}
+        <dd>Data incomplete...</dd>
+      {% endif %}
       <dt>Pipeline metadata:</dt>
         <dd>{{ icenet_metadata['source']|trim }}</dd>
       <dt>Data metadata:</dt>
@@ -16,11 +20,15 @@
   <main class="bsk-panel-body">
     <div class="bsk-row">
       <div class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;">
+      {% if "date_range" in icenet_metadata %}
         <img src="{{ url_for("/api.icenet_app_icenet_get_image",
                              forecast_date=icenet_metadata["init_date"],
                              image="{}.png".format(icenet_metadata["date_range"][0].strftime("%Y%m%d"))) }}"
              style="width:600px"
              alt="Demo image" />
+      {% else %}
+        <p>Data incomplete...</p>
+      {% endif %}
       </div>
       <div class="bsk-col-12-md-6 bsk-docs-content-block">
         {{ icenet_sie_change }}
