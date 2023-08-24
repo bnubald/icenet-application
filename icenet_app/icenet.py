@@ -14,7 +14,7 @@ from icenet_app.utils import get_forecast_data
 def get_image_data(forecast_date: str,
                    leadtime: int = 1,
                    data_type: str = "sic_mean",
-                   region: tuple = (110, 235, 140, 265)):
+                   region: tuple = (0, 0, 432, 432)):
     icenet_data = os.environ["ICENET_DATA_LOCATION"] \
         if "ICENET_DATA_LOCATION" in os.environ else os.path.join(".", "data")
 
@@ -26,7 +26,7 @@ def get_image_data(forecast_date: str,
     x1, y1, x2, y2 = region
     pred_data = pred_data[(len(ds.yc) - y2):(len(ds.yc) - y1), x1:x2]
 
-    return jsonify(forecast_data=pred_data.tolist())
+    return pred_data.tolist()
 
 
 def get_image(forecast_date: str,

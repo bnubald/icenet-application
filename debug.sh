@@ -8,6 +8,6 @@ fi
 export FLASK_APP="icenet_app.app"
 export FLASK_DEBUG=True
 export FLASK_ENVIRONMENT=development
-export ICENET_DATA_LOCATION=${ICENET_DATA_PATH:-./data}
+export ICENET_DATA_LOCATION=${ICENET_DATA_PATH:-/data}
 
 flask run --debug

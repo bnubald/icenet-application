@@ -24,9 +24,6 @@
     </dl>
   </header>
   <main class="bsk-panel-body">
-
-    {% if False %}
-
     <div class="bsk-row">
       <div class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;">
       {% if "date_range" in icenet_metadata %}
@@ -53,23 +50,21 @@
              alt="Standard deviation of ensemble of forecast on {{ picture_date.strftime("%Y%m%d") }}" />
         {% endfor %}
       {% else %}
-        <p>Data incomplete...</p>
+      </div>
       {% endif %}
+    </div>
+
+
+    <div class="bsk-row">
+      <div class="bsk-col-12-md-12 bsk-docs-content-block">
+        <div id="plot_date_picker" class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;"></div>
       </div>
     </div>
 
-    {% else %}
-
     <div class="bsk-row">
-      <div class="bsk-col-12-md-6 bsk-docs-content-block">...</div>
-      <div class="bsk-col-12-md-6 bsk-docs-content-block">...</div>
-    </div>
-
-    {% endif %}
-
-    <div class="bsk-row">
-      <div class="bsk-col-12-md-12 bsk-docs-content-block" style="text-align:center;">
-        <div id="plot_date_picker" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
+      <div class="bsk-col-12-md-12 bsk-docs-content-block">
+        <div id="plot_sic_mean" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
+        <div id="plot_sic_stddev" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
       </div>
     </div>
     <div class="bsk-row">
@@ -91,6 +86,7 @@
         by the IceNet pipeline for demonstration and research purposes only.</p>
       </div>
     </div>
+
   </main>
 </div>
 {% endblock %}
@@ -98,6 +94,12 @@
 {% block scripts %}
     {{ super() }}
     <script type="text/javascript" language="javascript">
+        fetch('/plots/sic_mean')
+            .then(function(response) { return response.json(); })
+            .then(function(item) { Bokeh.embed.embed_item(item, "plot_sic_mean"); });
+        fetch('/plots/sic_stddev')
+            .then(function(response) { return response.json(); })
+            .then(function(item) { Bokeh.embed.embed_item(item, "plot_sic_stddev"); });
         fetch('/plots/date_picker')
             .then(function(response) { return response.json(); })
             .then(function(item) { Bokeh.embed.embed_item(item, "plot_date_picker"); });
@@ -111,11 +113,11 @@
             .then(function(response) { return response.json(); })
             .then(function(item) { Bokeh.embed.embed_item(item, "plot_trend_stddev"); });
 
-        /*var fc_image_cur_id = $("img.fc_image_sic").first().attr('id').slice(-8);
+        var fc_image_cur_id = $("img.fc_image_sic").first().attr('id').slice(-8);
         console.log("First image shown is " + fc_image_cur_id);
         $("img.fc_image_sic").hide();
         $("img.fc_image_stddev").hide();
         $("img#fc_image_sic_" + fc_image_cur_id).show();
-        $("img#fc_image_stddev_" + fc_image_cur_id).show();*/
+        $("img#fc_image_stddev_" + fc_image_cur_id).show();
     </script>
 {% endblock %}
