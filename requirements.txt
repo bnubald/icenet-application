@@ -4,3 +4,4 @@ connexion[swagger-ui]
 flask<2.3.0
 gunicorn
 urllib3<2.0.0
+xarray[io]

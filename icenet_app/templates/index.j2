@@ -18,6 +18,9 @@
     </dl>
   </header>
   <main class="bsk-panel-body">
+
+    {% if False %}
+
     <div class="bsk-row">
       <div class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;">
       {% if "date_range" in icenet_metadata %}
@@ -48,8 +51,18 @@
       {% endif %}
       </div>
     </div>
+
+    {% else %}
+
     <div class="bsk-row">
-      <div class="bsk-col-12-md-12 bsk-docs-content-block center">
+      <div class="bsk-col-12-md-6 bsk-docs-content-block">...</div>
+      <div class="bsk-col-12-md-6 bsk-docs-content-block">...</div>
+    </div>
+
+    {% endif %}
+
+    <div class="bsk-row">
+      <div class="bsk-col-12-md-12 bsk-docs-content-block" style="text-align:center;">
         {{ date_picker(icenet_metadata["date_range"]) }}
       </div>
     </div>

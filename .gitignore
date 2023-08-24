@@ -162,5 +162,5 @@ cython_debug/
 .idea/
 
 # Omit local testing data
-/data/
+/data
 
