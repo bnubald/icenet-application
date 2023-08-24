@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 
 import pandas as pd
 from bas_style_kit_jinja_templates import BskTemplates
+from bokeh.resources import CDN
 from flask import redirect, render_template, request
 from jinja2 import PrefixLoader, PackageLoader
 
@@ -12,7 +13,7 @@ import connexion
 
 logging.getLogger().setLevel(logging.DEBUG)
 
-from icenet_app.plots import line_plot, date_picker
+from icenet_app.plots import plots
 from icenet_app.utils import load_json, get_forecast_data
 
 
@@ -39,6 +40,9 @@ def create_app(config_class=None):
     application.config['BSK_TEMPLATES'].site_description = 'IceNet Dashboard and API services'
     application.config['BSK_TEMPLATES'].site_styles.append({'href': '/static/css/main.css'})
     application.config['BSK_TEMPLATES'].site_title = 'IceNet Dashboard'
+
+    application.register_blueprint(plots, url_prefix='/plots')
+    #logging.info(application.url_map)
 
     return application
 
@@ -77,14 +81,5 @@ def index():
         ))
 
     return render_template("app/index.j2",
-                           date_picker=date_picker,
-                           icenet_metadata=icenet_metadata,
-                           icenet_sie_change=line_plot(load_json("output_sie_growth.json",
-                                                                 icenet_data_inventory=inventory),
-                                                       title="Sea ice extent change"),
-                           icenet_trend_mean=line_plot(load_json("output_trend.json",
-                                                                 icenet_data_inventory=inventory)['mean'],
-                                                       title="Sea ice mean change"),
-                           icenet_trend_stddev=line_plot(load_json("output_trend.json",
-                                                                   icenet_data_inventory=inventory)['stddev'],
-                                                         title="Ensemble stddev change"))
+                           bokeh_resources=CDN.render(),
+                           icenet_metadata=icenet_metadata)

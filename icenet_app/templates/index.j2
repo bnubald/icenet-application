@@ -1,4 +1,10 @@
 {% extends "app/layouts/base.j2" %}
+
+{% block head %}
+    {{ super() }}
+    {{ bokeh_resources }}
+{% endblock %}
+
 {% block main_content %}
 <div class="bsk-panel bsk-panel-default">
   <header class="bsk-panel-heading">
@@ -63,21 +69,15 @@
 
     <div class="bsk-row">
       <div class="bsk-col-12-md-12 bsk-docs-content-block" style="text-align:center;">
-        {{ date_picker(icenet_metadata["date_range"]) }}
+        <div id="plot_date_picker" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
       </div>
     </div>
     <div class="bsk-row">
-      <div class="bsk-col-12-md-6 bsk-docs-content-block">
-        {{ icenet_trend_mean }}
-      </div>
-      <div class="bsk-col-12-md-6 bsk-docs-content-block">
-        {{ icenet_trend_stddev }}
-      </div>
+      <div id="plot_trend_mean" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
+      <div id="plot_trend_stddev" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
     </div>
     <div class="bsk-row">
-      <div class="bsk-col-12-md-6 bsk-docs-content-block">
-        {{ icenet_sie_change }}
-      </div>
+      <div id="plot_sie_change" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
       <div class="bsk-col-12-md-6 bsk-docs-content-block">&nbsp;</div>
     </div>
     <div class="bsk-row">
@@ -98,11 +98,24 @@
 {% block scripts %}
     {{ super() }}
     <script type="text/javascript" language="javascript">
-        var fc_image_cur_id = $("img.fc_image_sic").first().attr('id').slice(-8);
+        fetch('/plots/date_picker')
+            .then(function(response) { return response.json(); })
+            .then(function(item) { Bokeh.embed.embed_item(item, "plot_date_picker"); });
+        fetch('/plots/sie_change')
+            .then(function(response) { return response.json(); })
+            .then(function(item) { Bokeh.embed.embed_item(item, "plot_sie_change"); });
+        fetch('/plots/trend_mean')
+            .then(function(response) { return response.json(); })
+            .then(function(item) { Bokeh.embed.embed_item(item, "plot_trend_mean"); });
+        fetch('/plots/trend_stddev')
+            .then(function(response) { return response.json(); })
+            .then(function(item) { Bokeh.embed.embed_item(item, "plot_trend_stddev"); });
+
+        /*var fc_image_cur_id = $("img.fc_image_sic").first().attr('id').slice(-8);
         console.log("First image shown is " + fc_image_cur_id);
         $("img.fc_image_sic").hide();
         $("img.fc_image_stddev").hide();
         $("img#fc_image_sic_" + fc_image_cur_id).show();
-        $("img#fc_image_stddev_" + fc_image_cur_id).show();
+        $("img#fc_image_stddev_" + fc_image_cur_id).show();*/
     </script>
 {% endblock %}
