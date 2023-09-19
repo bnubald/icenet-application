@@ -31,7 +31,9 @@
         <div class="bsk-col-12-md-12 bsk-docs-content-block">
           <div class="bsk-col-12-md-4 bsk-docs-content-block"></div>
           <div id="plot_date_picker" class="bsk-col-12-md-4 bsk-docs-content-block"></div>
-          <div class="bsk-col-12-md-4 bsk-docs-content-block"></div>
+          <div class="bsk-col-12-md-4 bsk-docs-content-block">
+            <br /><button id="update_date_button" class="bsk-btn bsk-btn-primary" type="submit">Update imagery</button>
+          </div>
         </div>
       </div>
   
@@ -80,12 +82,14 @@
 {% block scripts %}
     {{ super() }}
     <script type="text/javascript" language="javascript">
+        var fc_image_cur_id = "";
+
         fetch('/plots/sic_mean')
             .then(function(response) { return response.json(); })
-            .then(function(item) { Bokeh.embed.embed_item(item, "plot_sic_mean"); });
+            .then(function(item) { return Bokeh.embed.embed_item(item, "plot_sic_mean"); });
         fetch('/plots/sic_stddev')
             .then(function(response) { return response.json(); })
-            .then(function(item) { Bokeh.embed.embed_item(item, "plot_sic_stddev"); });
+            .then(function(item) { return Bokeh.embed.embed_item(item, "plot_sic_stddev"); });
         fetch('/plots/date_picker')
             .then(function(response) { return response.json(); })
             .then(function(item) { Bokeh.embed.embed_item(item, "plot_date_picker"); });
@@ -99,11 +103,20 @@
             .then(function(response) { return response.json(); })
             .then(function(item) { Bokeh.embed.embed_item(item, "plot_trend_stddev"); });
 
-        var fc_image_cur_id = $("img.fc_image_sic").first().attr('id').slice(-8);
-        console.log("First image shown is " + fc_image_cur_id);
-        $("img.fc_image_sic").hide();
-        $("img.fc_image_stddev").hide();
-        $("img#fc_image_sic_" + fc_image_cur_id).show();
-        $("img#fc_image_stddev_" + fc_image_cur_id).show();
+        $("button#update_date_button").on("click", function() {
+            console.log(fc_image_cur_id);
+            fetch('/plots/sic_mean/' + fc_image_cur_id)
+                .then(function(response) { return response.json(); })
+                .then(function(item) {
+                    document.getElementById("plot_sic_mean").innerHTML = '';
+                    Bokeh.embed.embed_item(item, "plot_sic_mean");
+                });
+            fetch('/plots/sic_stddev/' + fc_image_cur_id)
+                .then(function(response) { return response.json(); })
+                .then(function(item) {
+                    document.getElementById("plot_sic_stddev").innerHTML = '';
+                    Bokeh.embed.embed_item(item, "plot_sic_stddev");
+                });
+        });
     </script>
 {% endblock %}

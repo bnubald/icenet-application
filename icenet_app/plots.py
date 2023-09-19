@@ -1,3 +1,4 @@
+import datetime as dt
 import json
 import logging
 import requests
@@ -5,7 +6,7 @@ import requests
 import bokeh.palettes as palettes
 from bokeh.plotting import figure
 from bokeh.embed import json_item
-from bokeh.models import CustomJS, DateSlider
+from bokeh.models import CustomJS, DateSlider, BuiltinIcon, Button
 
 import numpy as np
 import pandas as pd
@@ -21,10 +22,12 @@ TOOLS = "crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,reset,box_select,pol
 plots = Blueprint('plots', __name__, template_folder='templates')
 
 
-@plots.route("/sic_mean")
-def plot_sic_mean():
+@plots.route("/sic_mean", defaults={"date": None})
+@plots.route("/sic_mean/<date>")
+def plot_sic_mean(date):
     forecast_date = get_forecast_dates()[0]
-    data = np.array(get_image_data(forecast_date))
+    leadtime = 1 if date is None else (pd.to_datetime(date) - pd.to_datetime(forecast_date)).days
+    data = np.array(get_image_data(forecast_date, leadtime=leadtime))
     p = figure(width=500, height=500, tools=TOOLS)
     p.x_range.range_padding = p.y_range.range_padding = 0
     p.image(image=[data], x=0, y=0, dw=10, dh=10, palette=palettes.Viridis256, level="image")
@@ -32,10 +35,12 @@ def plot_sic_mean():
     return json.dumps(json_item(p))
 
 
-@plots.route("/sic_stddev")
-def plot_sic_stddev():
+@plots.route("/sic_stddev", defaults={"date": None})
+@plots.route("/sic_stddev/<date>")
+def plot_sic_stddev(date):
     forecast_date = get_forecast_dates()[0]
-    data = np.array(get_image_data(forecast_date, data_type="sic_stddev"))
+    leadtime = 1 if date is None else (pd.to_datetime(date) - pd.to_datetime(forecast_date)).days
+    data = np.array(get_image_data(forecast_date, data_type="sic_stddev", leadtime=leadtime))
     p = figure(width=500, height=500, tools=TOOLS)
     p.x_range.range_padding = p.y_range.range_padding = 0
     p.image(image=[data], x=0, y=0, dw=10, dh=10, palette=palettes.Blues256, level="image")
@@ -84,12 +89,8 @@ def date_picker():
         let month = date.getMonth() + 1;
         let monthStr = month < 10 ? "0" + month: month;
         let dayStr = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-        let dateStr = "".concat(date.getFullYear(), monthStr, dayStr);
-        console.log("Showing " + dateStr);
-        $("img#fc_image_sic_" + fc_image_cur_id).hide();
-        $("img#fc_image_stddev_" + fc_image_cur_id).hide();
-        $("img#fc_image_sic_" + dateStr).show();
-        $("img#fc_image_stddev_" + dateStr).show();
+        let dateStr = date.getFullYear() + "-" + monthStr + "-" + dayStr;
+        
         fc_image_cur_id = dateStr;
     """))
 
