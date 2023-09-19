@@ -1,4 +1,5 @@
 import logging
+import os
 import secrets
 
 from werkzeug.security import generate_password_hash
@@ -6,6 +7,9 @@ from werkzeug.security import generate_password_hash
 
 class Config(object):
     AUTHENTICATING_HTTP = False
+    DATA_PATH = os.environ["ICENET_DATA_LOCATION"] \
+        if "ICENET_DATA_LOCATION" in os.environ \
+        else os.path.join(os.sep, "data")
     DEBUG = True
     LOGGING_LEVEL = logging.WARNING
     SECRET_KEY = secrets.token_hex()
@@ -20,7 +24,7 @@ class Config(object):
     @staticmethod
     def init_app(app):
         file_handler = logging.StreamHandler()
-        file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(app.config.get("LOGGING_LEVEL"))
         app.logger.addHandler(file_handler)
 
 

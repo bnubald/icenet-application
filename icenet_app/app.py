@@ -19,13 +19,13 @@ from icenet_app.extensions import auth
 from icenet_app.plots import plots
 from icenet_app.utils import load_json, get_forecast_data
 
-logging.getLogger().setLevel(logging.INFO)
 logging.getLogger("connexion").setLevel(logging.INFO)
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 
 def create_app():
     config_class = configs[os.getenv("ICENET_APP_ENV") or "production"]
+    logging.getLogger().setLevel(config_class.LOGGING_LEVEL)
     logging.info("Loading from configuration class: {}".format(config_class))
 
     connexion_app = connexion.FlaskApp(__name__,
@@ -33,8 +33,8 @@ def create_app():
     connexion_app.add_api(config_class.SWAGGER_SPECIFICATION)
     application = connexion_app.app
 
-    config_class.init_app(application)
     application.config.from_object(config_class)
+    config_class.init_app(application)
 
     application.jinja_loader = PrefixLoader({
         "app": PackageLoader("icenet_app"),
@@ -124,7 +124,6 @@ def index():
             start_date=date_range[0].strftime("%F"),
         ))
 
-    logging.info(app.config["USERS"])
     return render_template("app/index.j2",
                            bokeh_resources=CDN.render(),
                            icenet_metadata=icenet_metadata)
