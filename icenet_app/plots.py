@@ -70,12 +70,11 @@ def plot_trend_stddev():
 @plots.route("/date_picker")
 def date_picker():
     inventory = get_forecast_data()
-    date_range_files = sorted([df.split(".")[1] for df in inventory.keys() if df.endswith(".png")])
-    if len(date_range_files) < 1:
-        logging.warning("No image data available")
-        return jsonify([])
-    else:
-        date_range = pd.date_range(date_range_files[0], date_range_files[-1])
+    icenet_metadata = load_json("output_metadata.json", icenet_data_inventory=inventory)
+
+    start_dt = pd.to_datetime(icenet_metadata['time_coverage_start'])
+    end_dt = pd.to_datetime(icenet_metadata['time_coverage_end'])
+    date_range = pd.date_range(start_dt, end_dt)
 
     date_slider = DateSlider(value=date_range[0].date(),
                              start=date_range[0].date(),

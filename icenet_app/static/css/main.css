@@ -1,3 +1,7 @@
 .fc_image {
     width: 600px;
 }
+
+#plot_date_picker {
+    padding: 20px;
+}
