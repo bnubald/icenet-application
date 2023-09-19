@@ -37,8 +37,8 @@ def get_forecast_data(lookup_date: dt.date = None,
         forecast_dates = [date_dir for date_dir in forecast_dates
                           if lookup_date.strftime(date_dir_format) == date_dir]
 
-    logging.info("Data types: {}".format(data_types))
-    logging.info("Forecast date directories available: {}".format(forecast_dates))
+    logging.debug("Data types: {}".format(data_types))
+    logging.debug("Forecast date directories available: {}".format(forecast_dates))
 
     inventory = {filename: os.path.join(icenet_data, data_type, forecast_date, filename)
                  for forecast_date in forecast_dates

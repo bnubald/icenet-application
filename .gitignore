@@ -163,4 +163,5 @@ cython_debug/
 
 # Omit local testing data
 /data
-
+icenet_app.zip
+auth_list.json

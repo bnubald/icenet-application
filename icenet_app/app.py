@@ -1,30 +1,40 @@
 import datetime as dt
+import json
 import logging
 import os
 from urllib.parse import urlparse
 
 import pandas as pd
+
 from bas_style_kit_jinja_templates import BskTemplates
 from bokeh.resources import CDN
 from flask import redirect, render_template, request
 from jinja2 import PrefixLoader, PackageLoader
+from werkzeug.security import generate_password_hash, check_password_hash
 
 import connexion
 
-logging.getLogger().setLevel(logging.DEBUG)
-
+from icenet_app.config import configs
+from icenet_app.extensions import auth
 from icenet_app.plots import plots
 from icenet_app.utils import load_json, get_forecast_data
 
+logging.getLogger().setLevel(logging.INFO)
+logging.getLogger("connexion").setLevel(logging.INFO)
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
-def create_app(config_class=None):
+
+def create_app():
+    config_class = configs[os.getenv("ICENET_APP_ENV") or "production"]
+    logging.info("Loading from configuration class: {}".format(config_class))
+
     connexion_app = connexion.FlaskApp(__name__,
-                                       specification_dir="../")
-    connexion_app.add_api("swagger.yml")
+                                       specification_dir=config_class.SWAGGER_SPECIFICATION_DIR)
+    connexion_app.add_api(config_class.SWAGGER_SPECIFICATION)
     application = connexion_app.app
 
-    if config_class is not None:
-        application.config.from_object(config_class)
+    config_class.init_app(application)
+    application.config.from_object(config_class)
 
     application.jinja_loader = PrefixLoader({
         "app": PackageLoader("icenet_app"),
@@ -48,6 +58,29 @@ def create_app(config_class=None):
 
 
 app = create_app()
+
+
+@app.before_request
+@auth.login_required
+def ensure_authorised():
+    pass
+
+
+@auth.verify_password
+def verify_password(username, password):
+    user_list = app.config['USERS']
+    auth_file = os.getenv("ICENET_AUTH_LIST") or None
+
+    if auth_file is not None:
+        with open(auth_file, "r") as fh:
+            users = json.load(fh)
+            user_list.update({
+                k: generate_password_hash(v) for k, v in users.items()
+            })
+
+    logging.info([username, password, user_list, generate_password_hash(password)])
+    if username in user_list and check_password_hash(user_list[username], password):
+        return username
 
 
 @app.errorhandler(404)
@@ -86,6 +119,7 @@ def index():
             start_date=date_range[0].strftime("%F"),
         ))
 
+    logging.info(app.config["USERS"])
     return render_template("app/index.j2",
                            bokeh_resources=CDN.render(),
                            icenet_metadata=icenet_metadata)

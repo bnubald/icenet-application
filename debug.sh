@@ -6,8 +6,9 @@ if [ ! -d venv ]; then
 fi
 
 export FLASK_APP="icenet_app.app"
-export FLASK_DEBUG=True
 export FLASK_ENVIRONMENT=development
-export ICENET_DATA_LOCATION=${ICENET_DATA_PATH:-/data}
+export ICENET_APP_ENV=development
+export ICENET_AUTH_LIST=`pwd`/auth_list.json
+export ICENET_DATA_LOCATION=${ICENET_DATA_LOCATION:-/data}
 
 flask run --debug
