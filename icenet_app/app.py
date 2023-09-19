@@ -70,6 +70,7 @@ def ensure_authorised():
 def verify_password(username, password):
     user_list = app.config['USERS']
     auth_file = os.getenv("ICENET_AUTH_LIST") or None
+    auth_entry = os.getenv("ICENET_AUTH_USER") or None
 
     if auth_file is not None:
         with open(auth_file, "r") as fh:
@@ -78,7 +79,11 @@ def verify_password(username, password):
                 k: generate_password_hash(v) for k, v in users.items()
             })
 
-    logging.info([username, password, user_list, generate_password_hash(password)])
+    if auth_entry is not None:
+        user_list.update({
+            auth_entry.split(":")[0]: generate_password_hash(auth_entry.split(":")[1])
+        })
+
     if username in user_list and check_password_hash(user_list[username], password):
         return username
 
