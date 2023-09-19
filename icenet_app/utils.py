@@ -30,6 +30,9 @@ def get_forecast_data(lookup_date: dt.date = None,
 
     forecast_dates = list(set(forecast_dates))
 
+    if len(forecast_dates) == 0:
+        return None
+
     if lookup_date is not None:
         forecast_dates = [date_dir for date_dir in forecast_dates
                           if lookup_date.strftime(date_dir_format) == date_dir]
@@ -48,7 +51,12 @@ def load_json(filename, icenet_data_inventory=None):
     if not icenet_data_inventory:
         icenet_data_inventory = get_forecast_data()
 
-    file_path = icenet_data_inventory[filename]
+    try:
+        file_path = icenet_data_inventory[filename]
+    except KeyError:
+        logging.warning("We're missing a file: {}".format(filename))
+        return None
+
     logging.debug("Attempting to load {}".format(file_path))
 
     file_size = os.stat(file_path).st_size

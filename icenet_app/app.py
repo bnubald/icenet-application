@@ -65,6 +65,12 @@ def index():
         return redirect(location, 301)
 
     inventory = get_forecast_data()
+
+    if inventory is None:
+        logging.warning("No data is available")
+        return render_template("app/index.j2",
+                               bokeh_resources=None,
+                               icenet_metadata=None)
     icenet_metadata = load_json("output_metadata.json", icenet_data_inventory=inventory)
 
     date_range_files = sorted([df.split(".")[1] for df in inventory.keys() if df.endswith(".png")])

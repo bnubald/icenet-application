@@ -2,79 +2,93 @@
 
 {% block head %}
     {{ super() }}
-    {{ bokeh_resources }}
+    {% if bokeh_resources %}{{ bokeh_resources }}{% endif %}
 {% endblock %}
 
 {% block main_content %}
 <div class="bsk-panel bsk-panel-default">
-  <header class="bsk-panel-heading">
-    <dl class="bsk-dl-lg bsk-dl-striped bsk-dl-horizontal bsk-dl-horizontal-lg">
-      <dt>Forecast history:</dt>
-        <dd>{{ icenet_metadata['history'] }}</dd>
-      <dt>Forecast period:</dt>
-      {% if "date_range" in icenet_metadata %}
-        <dd>{{ icenet_metadata['start_date'] }} - {{ icenet_metadata['end_date'] }}</dd>
-      {% else %}
-        <dd>Data incomplete...</dd>
-      {% endif %}
-      <dt>Pipeline metadata:</dt>
-        <dd>{{ icenet_metadata['source']|trim }}</dd>
-      <dt>Data metadata:</dt>
-        <dd>{{ icenet_metadata['spatial_resolution'] }} in {{ icenet_metadata['geospatial_bounds_crs'] }}</dd>
-    </dl>
-  </header>
+  {% if icenet_metadata %}
+    <header class="bsk-panel-heading">
+      <dl class="bsk-dl-lg bsk-dl-striped bsk-dl-horizontal bsk-dl-horizontal-lg">
+        <dt>Forecast history:</dt>
+          <dd>{{ icenet_metadata['history'] }}</dd>
+        <dt>Forecast period:</dt>
+        {% if "date_range" in icenet_metadata %}
+          <dd>{{ icenet_metadata['start_date'] }} - {{ icenet_metadata['end_date'] }}</dd>
+        {% else %}
+          <dd>Data incomplete...</dd>
+        {% endif %}
+        <dt>Pipeline metadata:</dt>
+          <dd>{{ icenet_metadata['source']|trim }}</dd>
+        <dt>Data metadata:</dt>
+          <dd>{{ icenet_metadata['spatial_resolution'] }} in {{ icenet_metadata['geospatial_bounds_crs'] }}</dd>
+      </dl>
+    </header>
+  {% endif %}
   <main class="bsk-panel-body">
-    <div class="bsk-row">
-      <div class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;">
-      {% if "date_range" in icenet_metadata %}
-        {% for picture_date in icenet_metadata["date_range"] %}
-        <img src="{{ url_for("/api.icenet_app_icenet_get_image",
-                             forecast_date=icenet_metadata["init_date"],
-                             image="sic_mean.{}.png".format(picture_date.strftime("%Y%m%d"))) }}"
-             class="fc_image fc_image_sic"
-             id="fc_image_sic_{{ picture_date.strftime("%Y%m%d") }}"
-             alt="Image of forecast on {{ picture_date.strftime("%Y%m%d") }}" />
-        {% endfor %}
-      {% else %}
-        <p>Data incomplete...</p>
-      {% endif %}
+    {% if icenet_metadata %}
+      <div class="bsk-row">
+        <div class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;">
+        {% if "date_range" in icenet_metadata %}
+          {% for picture_date in icenet_metadata["date_range"] %}
+          <img src="{{ url_for("/api.icenet_app_icenet_get_image",
+                               forecast_date=icenet_metadata["init_date"],
+                               image="sic_mean.{}.png".format(picture_date.strftime("%Y%m%d"))) }}"
+               class="fc_image fc_image_sic"
+               id="fc_image_sic_{{ picture_date.strftime("%Y%m%d") }}"
+               alt="Image of forecast on {{ picture_date.strftime("%Y%m%d") }}" />
+          {% endfor %}
+        {% else %}
+          <p>Data incomplete...</p>
+        {% endif %}
+        </div>
+        <div class="bsk-col-12-md-6 bsk-docs-content-block">
+        {% if "date_range" in icenet_metadata %}
+          {% for picture_date in icenet_metadata["date_range"] %}
+          <img src="{{ url_for("/api.icenet_app_icenet_get_image",
+                               forecast_date=icenet_metadata["init_date"],
+                               image="sic_stddev.{}.png".format(picture_date.strftime("%Y%m%d"))) }}"
+               class="fc_image fc_image_stddev"
+               id="fc_image_stddev_{{ picture_date.strftime("%Y%m%d") }}"
+               alt="Standard deviation of ensemble of forecast on {{ picture_date.strftime("%Y%m%d") }}" />
+          {% endfor %}
+        {% else %}
+        </div>
+        {% endif %}
       </div>
-      <div class="bsk-col-12-md-6 bsk-docs-content-block">
-      {% if "date_range" in icenet_metadata %}
-        {% for picture_date in icenet_metadata["date_range"] %}
-        <img src="{{ url_for("/api.icenet_app_icenet_get_image",
-                             forecast_date=icenet_metadata["init_date"],
-                             image="sic_stddev.{}.png".format(picture_date.strftime("%Y%m%d"))) }}"
-             class="fc_image fc_image_stddev"
-             id="fc_image_stddev_{{ picture_date.strftime("%Y%m%d") }}"
-             alt="Standard deviation of ensemble of forecast on {{ picture_date.strftime("%Y%m%d") }}" />
-        {% endfor %}
-      {% else %}
+  
+      <div class="bsk-row">
+        <div class="bsk-col-12-md-12 bsk-docs-content-block">
+          <div id="plot_date_picker" class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;"></div>
+        </div>
       </div>
-      {% endif %}
-    </div>
+  
+      <div class="bsk-row">
+        <div class="bsk-col-12-md-12 bsk-docs-content-block">
+          <div id="plot_sic_mean" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
+          <div id="plot_sic_stddev" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
+        </div>
+      </div>
+      <div class="bsk-row">
+        <div id="plot_trend_mean" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
+        <div id="plot_trend_stddev" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
+      </div>
+      <div class="bsk-row">
+        <div id="plot_sie_change" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
+        <div class="bsk-col-12-md-6 bsk-docs-content-block">&nbsp;</div>
+      </div>
+    {% else %}
+      <div class="bsk-row">
+        <div class="bsk-col-12-md-12 bsk-docs-content-block">
+          <div class="bsk-col-12-md-12 bsk-docs-content-block" style="text-align:center;">
+            <br /><br /><br /><br />
+            <p>We have no metadata for any forecasts, which suggests no data is currently uploaded...</p>
+            <br /><br /><br /><br />
+          </div>
+        </div>
+      </div>
+    {% endif %}
 
-
-    <div class="bsk-row">
-      <div class="bsk-col-12-md-12 bsk-docs-content-block">
-        <div id="plot_date_picker" class="bsk-col-12-md-6 bsk-docs-content-block" style="text-align:center;"></div>
-      </div>
-    </div>
-
-    <div class="bsk-row">
-      <div class="bsk-col-12-md-12 bsk-docs-content-block">
-        <div id="plot_sic_mean" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
-        <div id="plot_sic_stddev" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
-      </div>
-    </div>
-    <div class="bsk-row">
-      <div id="plot_trend_mean" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
-      <div id="plot_trend_stddev" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
-    </div>
-    <div class="bsk-row">
-      <div id="plot_sie_change" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
-      <div class="bsk-col-12-md-6 bsk-docs-content-block">&nbsp;</div>
-    </div>
     <div class="bsk-row">
       <div class="bsk-col-12-md-12 bsk-docs-content-block bsk-text-muted">
         <br /><br />
