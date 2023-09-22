@@ -51,12 +51,8 @@
         </div>
       </div>
       <div class="bsk-row">
-        <div id="plot_trend_mean" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
         <div id="plot_trend_stddev" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
-      </div>
-      <div class="bsk-row">
         <div id="plot_sie_change" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
-        <div class="bsk-col-12-md-6 bsk-docs-content-block">&nbsp;</div>
       </div>
     {% else %}
       <div class="bsk-row">
@@ -103,9 +99,6 @@
         fetch('/plots/sie_change')
             .then(function(response) { return response.json(); })
             .then(function(item) { Bokeh.embed.embed_item(item, "plot_sie_change"); });
-        fetch('/plots/trend_mean')
-            .then(function(response) { return response.json(); })
-            .then(function(item) { Bokeh.embed.embed_item(item, "plot_trend_mean"); });
         fetch('/plots/trend_stddev')
             .then(function(response) { return response.json(); })
             .then(function(item) { Bokeh.embed.embed_item(item, "plot_trend_stddev"); });
