@@ -16,8 +16,9 @@ from flask import jsonify, Blueprint
 from icenet_app.icenet import get_image_data
 from icenet_app.utils import load_json, get_forecast_data, get_forecast_dates
 
-# hover,undo,redo,
-TOOLS = "crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,reset,box_select,poly_select,lasso_select,examine,help"
+# undo,redo,
+TOOLS = "crosshair,pan,hover,wheel_zoom,zoom_in,zoom_out,box_zoom,reset," \
+        "box_select,poly_select,lasso_select,examine,help"
 
 plots = Blueprint('plots', __name__, template_folder='templates')
 
@@ -72,6 +73,22 @@ def plot_trend_stddev():
                      title="Ensemble stddev change")
 
 
+@plots.route("/violations")
+def plot_violations():
+    inventory = get_forecast_data()
+    data = load_json("threshold_check.json",
+                     icenet_data_inventory=inventory)[0]
+
+    years = list([int(k) for k in data.keys() if int(k) != 0])
+    values = list([int(v) for k, v in data.items() if int(k) != 0])
+
+    logging.info((years, values))
+    p = figure(height=400, width=700, tools=TOOLS,
+               title="SIC violations against previous years")
+    p.vbar(x=years, top=values, width=0.9)
+    return json.dumps(json_item(p))
+
+
 @plots.route("/date_picker")
 def date_picker():
     inventory = get_forecast_data()
@@ -101,4 +118,3 @@ def line_plot(data, title):
     p = figure(title=title, tools=TOOLS, width=500, height=300)
     p.line(list(data.keys()), list(data.values()))
     return json.dumps(json_item(p))
-

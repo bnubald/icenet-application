@@ -54,6 +54,9 @@
         <div id="plot_trend_stddev" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
         <div id="plot_sie_change" class="bsk-col-12-md-6 bsk-docs-content-block"></div>
       </div>
+      <div class="bsk-row">
+        <div id="plot_violations" class="bsk-col-12-md-12 bsk-docs-content-block"></div>
+      </div>
     {% else %}
       <div class="bsk-row">
         <div class="bsk-col-12-md-12 bsk-docs-content-block">
@@ -102,6 +105,9 @@
         fetch('/plots/trend_stddev')
             .then(function(response) { return response.json(); })
             .then(function(item) { Bokeh.embed.embed_item(item, "plot_trend_stddev"); });
+        fetch('/plots/violations')
+            .then(function(response) { return response.json(); })
+            .then(function(item) { Bokeh.embed.embed_item(item, "plot_violations"); });
 
         $("button#update_date_button").on("click", function() {
             console.log(fc_image_cur_id);
