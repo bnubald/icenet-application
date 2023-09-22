@@ -24,9 +24,16 @@
           <dd>{{ icenet_metadata['spatial_resolution'] }} in {{ icenet_metadata['geospatial_bounds_crs'] }}</dd>
       </dl>
     </header>
+
   {% endif %}
   <main class="bsk-panel-body">
     {% if icenet_metadata %}
+      <div class="bsk-row">
+        <div class="bsk-col-12-md-12 bsk-docs-content-block">
+          <div class="bsk-col-12-md-12 bsk-docs-content-block">{{ icenet_metadata['summary'] }}</div>
+        </div>
+      </div>
+
       <div class="bsk-row">
         <div class="bsk-col-12-md-12 bsk-docs-content-block">
           <div class="bsk-col-12-md-4 bsk-docs-content-block"></div>

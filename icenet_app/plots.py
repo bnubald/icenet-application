@@ -28,7 +28,7 @@ def plot_sic_mean(date):
     forecast_date = get_forecast_dates()[0]
     leadtime = 1 if date is None else (pd.to_datetime(date) - pd.to_datetime(forecast_date)).days
     data = np.array(get_image_data(forecast_date, leadtime=leadtime))
-    p = figure(width=500, height=500, tools=TOOLS)
+    p = figure(width=500, height=500, title="Sea Ice Concentration Mean", tools=TOOLS)
     p.x_range.range_padding = p.y_range.range_padding = 0
     p.image(image=[data], x=0, y=0, dw=10, dh=10, palette=palettes.Viridis256, level="image")
     p.grid.grid_line_width = 0.5
@@ -41,7 +41,7 @@ def plot_sic_stddev(date):
     forecast_date = get_forecast_dates()[0]
     leadtime = 1 if date is None else (pd.to_datetime(date) - pd.to_datetime(forecast_date)).days
     data = np.array(get_image_data(forecast_date, data_type="sic_stddev", leadtime=leadtime))
-    p = figure(width=500, height=500, tools=TOOLS)
+    p = figure(width=500, height=500, title="Uncertainty (ensemble standard deviation across members)", tools=TOOLS)
     p.x_range.range_padding = p.y_range.range_padding = 0
     p.image(image=[data], x=0, y=0, dw=10, dh=10, palette=palettes.Blues256, level="image")
     p.grid.grid_line_width = 0.5
