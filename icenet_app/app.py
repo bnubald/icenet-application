@@ -72,7 +72,7 @@ def verify_password(username, password):
     auth_file = os.getenv("ICENET_AUTH_LIST") or None
     auth_entry = os.getenv("ICENET_AUTH_USER") or None
 
-    if auth_file is not None:
+    if auth_file is not None and os.path.exists(auth_file):
         with open(auth_file, "r") as fh:
             users = json.load(fh)
             user_list.update({
