@@ -1,6 +1,7 @@
 bas-style-kit-jinja-templates
 bokeh
 connexion[swagger-ui]
+connexion[flask]
 flask<2.3.0
 Flask-HTTPAuth
 gunicorn
